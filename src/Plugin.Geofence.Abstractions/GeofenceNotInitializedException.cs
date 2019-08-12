@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Plugin.Geofence.Abstractions
 {
@@ -12,14 +8,14 @@ namespace Plugin.Geofence.Abstractions
     /// </summary>
     public class GeofenceNotInitializedException : Exception
     {
-          public GeofenceNotInitializedException()
-          {
+        public GeofenceNotInitializedException()
+        {
 
-          }
+        }
 
-          public GeofenceNotInitializedException(string message) : base(message)
-          {
+        public GeofenceNotInitializedException(string message) : base(message)
+        {
 
-          }
+        }
     }
 }

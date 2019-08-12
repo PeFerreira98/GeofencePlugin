@@ -3,43 +3,41 @@ using Plugin.Geofence.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Plugin.Geofence
 {
     internal class GeofenceStore : BaseGeofenceStore
     {
         // The SharedPreferences object in which geofences are stored
-		readonly ISharedPreferences mPrefs;
+        readonly ISharedPreferences mPrefs;
 
         // Invalid values, used to test geofence storage when retrieving geofences.
         const long InvalidLongValue = -999L;
-        const float InvalidFloatValue= -999.0f;
-        const int InvalidIntValue= -999;
+        const float InvalidFloatValue = -999.0f;
+        const int InvalidIntValue = -999;
 
-        private static GeofenceStore sharedInstance = new GeofenceStore();
+        private static readonly GeofenceStore sharedInstance = new GeofenceStore();
 
         public static GeofenceStore SharedInstance { get { return sharedInstance; } }
 
-		/// <summary>
-		/// Create the SharedPreferences storage with private access only.
-		/// </summary>
-		private GeofenceStore ()
-		{
+        /// <summary>
+        /// Create the SharedPreferences storage with private access only.
+        /// </summary>
+        private GeofenceStore()
+        {
             mPrefs = Android.App.Application.Context.GetSharedPreferences(GeofenceStoreId, FileCreationMode.Private);
-		}
- 
+        }
 
-		/// <summary>
-		/// Returns a stored geofence by its ID, or returns null if it's not found
-		/// </summary>
-		/// <returns>A SimpleGeofence defined by its center and radius, or null if the ID is invalid</returns>
-		/// <param name="id">The ID of a stored Geofence</param>
-		public override GeofenceCircularRegion Get(String id)
-		{
 
-			// Get the latitude for the geofence identified by id, or INVALID_FLOAT_VALUE if it doesn't exist (similarly for the other values that follow)
+        /// <summary>
+        /// Returns a stored geofence by its ID, or returns null if it's not found
+        /// </summary>
+        /// <returns>A SimpleGeofence defined by its center and radius, or null if the ID is invalid</returns>
+        /// <param name="id">The ID of a stored Geofence</param>
+        public override GeofenceCircularRegion Get(String id)
+        {
+
+            // Get the latitude for the geofence identified by id, or INVALID_FLOAT_VALUE if it doesn't exist (similarly for the other values that follow)
             double lat = mPrefs.GetFloat(GetFieldKey(id, LatitudeGeofenceRegionKey), InvalidFloatValue);
             double lng = mPrefs.GetFloat(GetFieldKey(id, LongitudeGeofenceRegionKey), InvalidFloatValue);
             double radius = mPrefs.GetFloat(GetFieldKey(id, RadiusGeofenceRegionKey), InvalidFloatValue);
@@ -58,7 +56,7 @@ namespace Plugin.Geofence
             //long expirationDuration = mPrefs.GetLong(GetFieldKey(id, ExpirationDurationGeofenceRegionKey), InvalidLongValue);
             //int transitionType = mPrefs.GetInt(GetFieldKey(id, TransitionTypeGeofenceRegionKey), InvalidIntValue);
 
-			// If none of the values is incorrect, return the object
+            // If none of the values is incorrect, return the object
             if (lat != InvalidFloatValue
                 && lng != InvalidFloatValue
                 && radius != InvalidFloatValue
@@ -67,35 +65,36 @@ namespace Plugin.Geofence
                 // && expirationDuration != InvalidLongValue
                 //&& transitionType != InvalidIntValue
                 )
-                return new GeofenceCircularRegion(id,lat,lng,radius,notifyOnEntry,notifyOnExit,notifyOnStay,showNotification,persistent,
+                return new GeofenceCircularRegion(id, lat, lng, radius, notifyOnEntry, notifyOnExit, notifyOnStay, showNotification, persistent,
                                                   showEntryNotification, showExitNotification, showStayNotification)
                 {
 
-                    NotificationEntryMessage=notificationEntryMessage,
-                    NotificationStayMessage=notificationStayMessage,
-                    NotificationExitMessage=notificationExitMessage,
-                   
+                    NotificationEntryMessage = notificationEntryMessage,
+                    NotificationStayMessage = notificationStayMessage,
+                    NotificationExitMessage = notificationExitMessage,
+
                     StayedInThresholdDuration = TimeSpan.FromMilliseconds(stayedInThresholdDuration)
 
                 };
 
-			// Otherwise return null
-			return null;
-		}
+            // Otherwise return null
+            return null;
+        }
 
-		/// <summary>
-		/// Save a geofence
-		/// </summary>
-		/// <param name="region">The GeofenceCircularRegion with the values you want to save in SharedPreferemces</param>
-		public override void Save(GeofenceCircularRegion region) {
+        /// <summary>
+        /// Save a geofence
+        /// </summary>
+        /// <param name="region">The GeofenceCircularRegion with the values you want to save in SharedPreferemces</param>
+        public override void Save(GeofenceCircularRegion region)
+        {
 
             if (!region.Persistent)
                 return;
 
             string id = region.Id;
-			// Get a SharedPreferences editor instance. Among other things, SharedPreferences ensures that updates are atomic and non-concurrent
-			ISharedPreferencesEditor prefs = mPrefs.Edit();
-			// Write the geofence values to SharedPreferences 
+            // Get a SharedPreferences editor instance. Among other things, SharedPreferences ensures that updates are atomic and non-concurrent
+            ISharedPreferencesEditor prefs = mPrefs.Edit();
+            // Write the geofence values to SharedPreferences 
             prefs.PutFloat(GetFieldKey(id, LatitudeGeofenceRegionKey), (float)region.Latitude);
             prefs.PutFloat(GetFieldKey(id, LongitudeGeofenceRegionKey), (float)region.Longitude);
             prefs.PutFloat(GetFieldKey(id, RadiusGeofenceRegionKey), (float)region.Radius);
@@ -111,10 +110,10 @@ namespace Plugin.Geofence
             prefs.PutBoolean(GetFieldKey(id, ShowExitNotificationGeofenceRegionKey), region.ShowExitNotification);
             prefs.PutBoolean(GetFieldKey(id, ShowStayNotificationGeofenceRegionKey), region.ShowStayNotification);
             prefs.PutInt(GetFieldKey(id, StayedInThresholdDurationGeofenceRegionKey), (int)region.StayedInThresholdDuration.TotalMilliseconds);
-			// Commit the changes
-			prefs.Commit ();
-           
-		}
+            // Commit the changes
+            prefs.Commit();
+
+        }
 
         public override void RemoveAll()
         {
@@ -129,7 +128,7 @@ namespace Plugin.Geofence
             try
             {
                 ISharedPreferencesEditor prefs = mPrefs.Edit();
-         
+
                 prefs.Remove(GetFieldKey(id, LatitudeGeofenceRegionKey));
                 prefs.Remove(GetFieldKey(id, LongitudeGeofenceRegionKey));
                 prefs.Remove(GetFieldKey(id, RadiusGeofenceRegionKey));
@@ -153,21 +152,21 @@ namespace Plugin.Geofence
             {
                 System.Diagnostics.Debug.WriteLine(string.Format("{0} - Error: {1}", CrossGeofence.Id, ex.ToString()));
             }
-            
+
         }
 
-        public override Dictionary<string,GeofenceCircularRegion> GetAll()
+        public override Dictionary<string, GeofenceCircularRegion> GetAll()
         {
-            var keys = mPrefs.All.Where(p => p.Key.ToString().StartsWith(GeofenceStoreId) && p.Key.Split('_').Length > 1).Select(p => p.Key.Split('_')[1]).Distinct().ToList();
-            var regions = new Dictionary<string,GeofenceCircularRegion>();
+            List<string> keys = mPrefs.All.Where(p => p.Key.ToString().StartsWith(GeofenceStoreId) && p.Key.Split('_').Length > 1).Select(p => p.Key.Split('_')[1]).Distinct().ToList();
+            Dictionary<string, GeofenceCircularRegion> regions = new Dictionary<string, GeofenceCircularRegion>();
             foreach (string key in keys)
             {
-                var region = Get(key);
+                GeofenceCircularRegion region = Get(key);
                 if (region != null)
                     regions.Add(region.Id, region);
             }
             return regions;
         }
-		
+
     }
 }

@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Plugin.Geofence.Abstractions
 {
@@ -62,25 +58,25 @@ namespace Plugin.Geofence.Abstractions
         /// </summary>
         public string TransitionName
         {
-          get
-          {
-              switch (Transition)
-              {
+            get
+            {
+                switch (Transition)
+                {
 
-                  case GeofenceTransition.Entered:
-                      return "Entered";
+                    case GeofenceTransition.Entered:
+                        return "Entered";
 
-                  case GeofenceTransition.Exited:
-                      return "Exited";
+                    case GeofenceTransition.Exited:
+                        return "Exited";
 
-                  case GeofenceTransition.Stayed:
-                      return "Stayed in";
+                    case GeofenceTransition.Stayed:
+                        return "Stayed in";
 
-                  default:
-                      return "Unknown";
-              }
-          }
-           
+                    default:
+                        return "Unknown";
+                }
+            }
+
         }
 
         public GeofenceResult()

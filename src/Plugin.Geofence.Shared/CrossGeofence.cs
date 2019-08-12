@@ -1,16 +1,15 @@
-﻿using Plugin.Geofence;
-using Plugin.Geofence.Abstractions;
+﻿using Plugin.Geofence.Abstractions;
 using System;
 using System.Diagnostics;
 
 namespace Plugin.Geofence
 {
-  /// <summary>
-  /// Cross platform Geofence implemenations
-  /// </summary>
-  public class CrossGeofence
-  {
-    static Lazy<IGeofence> Implementation = new Lazy<IGeofence>(() => CreateGeofence(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
+    /// <summary>
+    /// Cross platform Geofence implemenations
+    /// </summary>
+    public class CrossGeofence
+    {
+        static readonly Lazy<IGeofence> Implementation = new Lazy<IGeofence>(() => CreateGeofence(), System.Threading.LazyThreadSafetyMode.PublicationOnly);
 
         /// <summary>
         /// Checks if plugin is initialized
@@ -47,30 +46,30 @@ namespace Plugin.Geofence
         public static bool RequestLocationPermission { get; set; }
 
 #if __ANDROID__
-      /// <summary>
-      /// Icon resource used for notification
-      /// </summary>
-      public static int IconResource { get; set; }
-      /// <summary>
-      /// ARGB Color used for notification
-      /// </summary>
-      public static int Color { get; set; }
-      /// <summary>
-      /// Large icon resource used for notification
-      /// </summary>
-      public static Android.Graphics.Bitmap LargeIconResource { get; set; }
-      /// <summary>
-      /// Sound for notification
-      /// </summary>
-      public static Android.Net.Uri SoundUri { get; set; }
-      /// <summary>
-      /// Location updates internal
-      /// </summary>
-      public static int LocationUpdatesInterval { get; set; }
-      /// <summary>
-      /// Fastest location updates interval
-      /// </summary>
-      public static int FastestLocationUpdatesInterval { get; set; }
+        /// <summary>
+        /// Icon resource used for notification
+        /// </summary>
+        public static int IconResource { get; set; }
+        /// <summary>
+        /// ARGB Color used for notification
+        /// </summary>
+        public static int Color { get; set; }
+        /// <summary>
+        /// Large icon resource used for notification
+        /// </summary>
+        public static Android.Graphics.Bitmap LargeIconResource { get; set; }
+        /// <summary>
+        /// Sound for notification
+        /// </summary>
+        public static Android.Net.Uri SoundUri { get; set; }
+        /// <summary>
+        /// Location updates internal
+        /// </summary>
+        public static int LocationUpdatesInterval { get; set; }
+        /// <summary>
+        /// Fastest location updates interval
+        /// </summary>
+        public static int FastestLocationUpdatesInterval { get; set; }
 #endif
 
         /// <summary>
@@ -81,7 +80,7 @@ namespace Plugin.Geofence
         /// <param name="smallestDisplacement"></param>
         /// <param name="requestNotificationPermission"></param>
         /// <param name="requestLocationPermission"></param>
-        public static void Initialize<T>(GeofencePriority priority = GeofencePriority.BalancedPower, float smallestDisplacement = 0, bool requestNotificationPermission = true, bool requestLocationPermission = true)
+        public static void Initialize<T>(GeofencePriority priority = GeofencePriority.HighAccuracy, float smallestDisplacement = 0, bool requestNotificationPermission = true, bool requestLocationPermission = true)
      where T : IGeofenceListener, new()
         {
             if (GeofenceListener == null)
@@ -112,7 +111,7 @@ namespace Plugin.Geofence
                 {
                     throw GeofenceNotInitializedException();
                 }
-                var ret = Implementation.Value;
+                IGeofence ret = Implementation.Value;
                 if (ret == null)
                 {
                     throw NotImplementedInReferenceAssembly();
@@ -122,13 +121,13 @@ namespace Plugin.Geofence
             }
         }
 
-    static IGeofence CreateGeofence()
-    {
+        static IGeofence CreateGeofence()
+        {
 #if NETSTANDARD1_0
-        return null;
+            return null;
 #else
             System.Diagnostics.Debug.WriteLine("Creating GeofenceImplementation");
-            var geofenceImplementation = new GeofenceImplementation();
+            GeofenceImplementation geofenceImplementation = new GeofenceImplementation();
             geofenceImplementation.RequestNotificationPermission = RequestNotificationPermission;
             geofenceImplementation.RequestLocationPermission = RequestLocationPermission;
             return geofenceImplementation;

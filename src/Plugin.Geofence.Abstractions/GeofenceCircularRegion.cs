@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Plugin.Geofence.Abstractions
 {
@@ -32,12 +28,12 @@ namespace Plugin.Geofence.Abstractions
             ShowStayNotification = region.ShowStayNotification;
         }
 
-        public GeofenceCircularRegion(string id, double centerLatitude, double centerLongitude, double radius, 
-                                      bool notifyOnEntry = true, bool notifyOnExit = true, bool notifyOnStay = false, 
-                                      bool showNotification = true, bool persistent = true, 
+        public GeofenceCircularRegion(string id, double centerLatitude, double centerLongitude, double radius,
+                                      bool notifyOnEntry = true, bool notifyOnExit = true, bool notifyOnStay = false,
+                                      bool showNotification = true, bool persistent = true,
                                       bool showEntryNotification = true, bool showExitNotification = true, bool showStayNotification = true)
         {
-            Id=id;
+            Id = id;
             Latitude = centerLatitude;
             Longitude = centerLongitude;
             Radius = radius;
@@ -57,7 +53,7 @@ namespace Plugin.Geofence.Abstractions
         /// <summary>
         /// Region center Latitude
         /// </summary>
-        public double Latitude  { get; set; }
+        public double Latitude { get; set; }
         /// <summary>
         /// Region center Longitude
         /// </summary>
@@ -126,7 +122,7 @@ namespace Plugin.Geofence.Abstractions
         /// </summary>
         public TimeSpan ExitThresholdDuration;
 
-   
+
         public override string ToString()
         {
             return Id;

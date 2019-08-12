@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Plugin.Geofence.Abstractions
 {
@@ -48,7 +45,7 @@ namespace Plugin.Geofence.Abstractions
         /// Gets all stored geofence regions
         /// </summary>
         /// <returns></returns>
-        public abstract  Dictionary<string, GeofenceCircularRegion> GetAll();
+        public abstract Dictionary<string, GeofenceCircularRegion> GetAll();
         /// <summary>
         /// Gets specific geofence region from store
         /// </summary>
@@ -69,6 +66,6 @@ namespace Plugin.Geofence.Abstractions
         /// </summary>
         /// <param name="id"></param>
         public abstract void Remove(String id);
-        
+
     }
 }

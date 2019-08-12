@@ -3,12 +3,9 @@ using Android.Content;
 using Android.Media;
 using Android.OS;
 using Android.Support.V4.App;
-using Plugin.Geofence;
 using Plugin.Geofence.Abstractions;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Plugin.Geofence
@@ -21,8 +18,8 @@ namespace Plugin.Geofence
     public class GeofenceTransitionsIntentService : IntentService
     {
         static int NotificationId = 0;
-        const int  NotificationMaxId = 6;
-        static object IntentLock = new object();
+        const int NotificationMaxId = 6;
+        static readonly object IntentLock = new object();
 
         /// <summary>
         /// Handles geofence intent arrival
@@ -52,16 +49,16 @@ namespace Plugin.Geofence
                     }
 
                     // Get the geofences that were triggered. A single event can trigger multiple geofences.                
-                    var triggeringGeofences = geofencingEvent.TriggeringGeofences;
-                    var geofenceTransitions = new List<GeofenceResult>();
-                    var transitionRegions = new Dictionary<string, GeofenceCircularRegion>();
+                    IList<Android.Gms.Location.IGeofence> triggeringGeofences = geofencingEvent.TriggeringGeofences;
+                    List<GeofenceResult> geofenceTransitions = new List<GeofenceResult>();
+                    Dictionary<string, GeofenceCircularRegion> transitionRegions = new Dictionary<string, GeofenceCircularRegion>();
                     if (triggeringGeofences != null)
                     {
                         foreach (Android.Gms.Location.IGeofence geofence in triggeringGeofences)
                         {
                             if (geofence == null) continue;
-                            var geofenceTransition = geofencingEvent.GeofenceTransition;
-                            var gTransition = GeofenceTransition.Unknown;
+                            int geofenceTransition = geofencingEvent.GeofenceTransition;
+                            GeofenceTransition gTransition = GeofenceTransition.Unknown;
                             // Get the transition type.
                             lock (GeofenceImplementation.Lock)
                             {
@@ -70,7 +67,7 @@ namespace Plugin.Geofence
                                 {
                                     ((GeofenceImplementation)CrossGeofence.Current).AddGeofenceResult(geofence.RequestId);
                                 }
-                                var result = CrossGeofence.Current.GeofenceResults[geofence.RequestId];
+                                GeofenceResult result = CrossGeofence.Current.GeofenceResults[geofence.RequestId];
 
                                 //geofencingEvent.TriggeringLocation.Accuracy
                                 result.Latitude = geofencingEvent.TriggeringLocation.Latitude;
@@ -99,14 +96,14 @@ namespace Plugin.Geofence
                                         gTransition = GeofenceTransition.Unknown;
                                         break;
                                 }
-                                System.Diagnostics.Debug.WriteLine(string.Format("{0} - Transition: {1}", CrossGeofence.Id, gTransition));
+                                System.Diagnostics.Debug.WriteLine($"{CrossGeofence.Id} - {result.RegionId} - Transition: {gTransition}");
                                 if (result.Transition != gTransition)
                                 {
                                     result.Transition = gTransition;
                                     geofenceTransitions.Add(new GeofenceResult(result));
                                     if (CrossGeofence.Current.Regions.ContainsKey(result.RegionId))
                                     {
-                                        var region = CrossGeofence.Current.Regions[result.RegionId];
+                                        GeofenceCircularRegion region = CrossGeofence.Current.Regions[result.RegionId];
                                         transitionRegions.Add(result.RegionId, new GeofenceCircularRegion(region));
                                     }
                                     //Check if device has stayed in region asynchronosly
@@ -118,47 +115,47 @@ namespace Plugin.Geofence
                     }
 
                     Task.Factory.StartNew(() =>
-                   {
-                       foreach (var result in geofenceTransitions)
-                       {
-                           if (result == null) continue;
-                           CrossGeofence.GeofenceListener.OnRegionStateChanged(result);
-                           if (transitionRegions.ContainsKey(result.RegionId))
-                           {
-                               var region = transitionRegions[result.RegionId];
-                               if (region.ShowNotification)
-                               {
-                                   string message = result.ToString();
-                                   switch (result.Transition)
-                                   {
-                                       case GeofenceTransition.Entered:
-                                           if (!region.ShowEntryNotification)
-                                               return;
-                                           message = string.IsNullOrEmpty(region.NotificationEntryMessage) ? message : region.NotificationEntryMessage;
-                                           break;
-                                       case GeofenceTransition.Exited:
-                                           if (!region.ShowExitNotification)
-                                               return;
-                                           message = string.IsNullOrEmpty(region.NotificationExitMessage) ? message : region.NotificationExitMessage;
-                                           break;
-                                       case GeofenceTransition.Stayed:
-                                           if (!region.ShowStayNotification)
-                                               return;
-                                           message = string.IsNullOrEmpty(region.NotificationStayMessage) ? message : region.NotificationStayMessage;
-                                           break;
+                    {
+                        foreach (GeofenceResult result in geofenceTransitions)
+                        {
+                            if (result == null) continue;
+                            CrossGeofence.GeofenceListener.OnRegionStateChanged(result);
+                            if (transitionRegions.ContainsKey(result.RegionId))
+                            {
+                                GeofenceCircularRegion region = transitionRegions[result.RegionId];
+                                if (region.ShowNotification)
+                                {
+                                    string message = result.ToString();
+                                    switch (result.Transition)
+                                    {
+                                        case GeofenceTransition.Entered:
+                                            if (!region.ShowEntryNotification)
+                                                return;
+                                            message = string.IsNullOrEmpty(region.NotificationEntryMessage) ? message : region.NotificationEntryMessage;
+                                            break;
+                                        case GeofenceTransition.Exited:
+                                            if (!region.ShowExitNotification)
+                                                return;
+                                            message = string.IsNullOrEmpty(region.NotificationExitMessage) ? message : region.NotificationExitMessage;
+                                            break;
+                                        case GeofenceTransition.Stayed:
+                                            if (!region.ShowStayNotification)
+                                                return;
+                                            message = string.IsNullOrEmpty(region.NotificationStayMessage) ? message : region.NotificationStayMessage;
+                                            break;
 
-                                   }
-                                   using (var handler = new Handler(Looper.MainLooper))
-                                   {
-                                       handler.Post(() =>
-                                       {
-                                           CreateNotification(context.ApplicationInfo.LoadLabel(context.PackageManager), message);
-                                       });
-                                   }
-                               }
-                           }
-                       }
-                   });
+                                    }
+                                    using (Handler handler = new Handler(Looper.MainLooper))
+                                    {
+                                        handler.Post(() =>
+                                        {
+                                            CreateNotification(context.ApplicationInfo.LoadLabel(context.PackageManager), message);
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    });
                 }
             }
             catch (Java.Lang.Exception ex)
@@ -178,7 +175,7 @@ namespace Plugin.Geofence
         /// <param name="message"></param>
         public void CreateNotification(string title, string message)
         {
-           
+
             try
             {
 
@@ -231,11 +228,11 @@ namespace Plugin.Geofence
                         .SetContentText(message); // the message to display.
 
                 // Set the icon resource if we have one
-                if(CrossGeofence.LargeIconResource != null)
+                if (CrossGeofence.LargeIconResource != null)
                     builder.SetLargeIcon(CrossGeofence.LargeIconResource);
 
                 // Set the color if we have one
-                if(CrossGeofence.Color != 0)
+                if (CrossGeofence.Color != 0)
                     builder.SetColor(CrossGeofence.Color);
 
 
@@ -257,7 +254,7 @@ namespace Plugin.Geofence
             {
                 System.Diagnostics.Debug.WriteLine(string.Format("{0} - {1}", CrossGeofence.Id, ex1.ToString()));
             }
-           
+
         }
     }
 }
