@@ -26,6 +26,11 @@ steps:
     outputDirectory: '$(outputDirectory)'
     configuration: '$(buildConfiguration)'
 
+- task: XamariniOS@2
+  inputs:
+    solutionFile: '**/*iOS*.csproj'
+    configuration: '$(buildConfiguration)'
+
 - task: NuGetCommand@2
   inputs:
     command: 'push'
