@@ -30,6 +30,8 @@ steps:
   inputs:
     solutionFile: '**/*iOS*.csproj'
     configuration: '$(buildConfiguration)'
+    packageApp: true
+    runNugetRestore: false
 
 - task: NuGetCommand@2
   inputs:
