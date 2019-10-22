@@ -2,7 +2,7 @@
 <package >
   <metadata minClientVersion="2.8.1">
     <id>Plugin.Geofence</id>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <title>Geofence Plugin for Xamarin</title>
     <authors>Rendy Del Rosario</authors>
     <owners>crossgeeks</owners>
@@ -13,7 +13,7 @@
     <description>Monitors geofence regions and handle region state changes events. Across iOS and Android from a single API.</description>
     <summary>Monitors geofence regions and handle region state changes events. Across iOS and Android from a single API.</summary>
     <copyright>Copyright 2018</copyright>
-    <tags>iOS,Android,geofence,monitoring,location,region</tags>
+    <tags>Android,geofence,monitoring,location,region</tags>
      <dependencies>
       <group targetFramework="netstandard1.0">
         <dependency id="NETStandard.Library" version="1.6.1" />
@@ -21,10 +21,10 @@
       <group targetFramework="MonoAndroid80">
         <dependency id="Xamarin.GooglePlayServices.Location" version="60.1142.1" />
       </group>
-      <group targetFramework="Xamarin.iOS10">
+      <!-- <group targetFramework="Xamarin.iOS10">
       </group>
       <group targetFramework="Xamarin.Mac20">
-      </group>
+      </group> -->
       <group targetFramework="portable-net45+win+wpa81+wp80">
       </group>
       <group targetFramework="uap">
@@ -42,6 +42,6 @@
         <!--Xamarin.Android-->
         <file src="..\src\Plugin.Geofence.Android\bin\Release\Plugin.Geofence.*" target="lib\MonoAndroid10" />
         <!--Xamarin.iOS-->
-        <file src="..\src\Plugin.Geofence.iOS\bin\iPhone\Release\Plugin.Geofence.*" target="lib\Xamarin.iOS10" />
+        <!-- <file src="..\src\Plugin.Geofence.iOS\bin\iPhone\Release\Plugin.Geofence.*" target="lib\Xamarin.iOS10" /> -->
   </files>
 </package>
