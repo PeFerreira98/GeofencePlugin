@@ -38,7 +38,7 @@
   </metadata>
   <files>
         <!--NetStandard/PCL-->
-        <file src="..\src\Plugin.Geofence\bin\Release\netstandard1.0\Plugin.Geofence.*" target="lib\netstandard1.0" />
+        <!-- <file src="..\src\Plugin.Geofence\bin\Release\netstandard1.0\Plugin.Geofence.*" target="lib\netstandard1.0" /> -->
         <!--Xamarin.Android-->
         <file src="..\src\Plugin.Geofence.Android\bin\Release\Plugin.Geofence.*" target="lib\MonoAndroid10" />
         <!--Xamarin.iOS-->
