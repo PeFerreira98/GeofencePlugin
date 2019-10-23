@@ -28,6 +28,18 @@ steps:
 
 - task: NuGetCommand@2
   inputs:
+    command: 'pack'
+    packagesToPack: '**/*.nuspec'
+    configuration: '$(buildConfiguration)'
+    versioningScheme: 'byPrereleaseNumber'
+    majorVersion: '1'
+    minorVersion: '0'
+    patchVersion: '2'
+    basePath: '$(Build.ArtifactStagingDirectory)'
+    includeNuGetOrg: true
+
+- task: NuGetCommand@2
+  inputs:
     command: 'push'
     feedsToUse: 'select'
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
